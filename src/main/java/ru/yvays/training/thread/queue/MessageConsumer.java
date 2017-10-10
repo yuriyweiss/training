@@ -20,6 +20,7 @@ public class MessageConsumer implements Callable<Boolean> {
         if (logger.isDebugEnabled()) {
             logger.debug("delayed [" + delay + "millis] processing message: " + message);
         }
+        // work emulation
         try {
             Thread.sleep(delay);
         } catch (InterruptedException e) {
@@ -27,7 +28,9 @@ public class MessageConsumer implements Callable<Boolean> {
             Thread.currentThread().interrupt();
             return false;
         }
-        logger.info(String.format("message processed: %s", message));
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("message processed: %s", message));
+        }
         return true;
     }
 }

@@ -4,27 +4,22 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class MessageHandler implements Runnable {
     private static final Logger logger = Logger.getLogger(MessageHandler.class);
 
     private final Message message;
-    private final List<ThreadPoolExecutor> consumerPools;
-    private final AtomicInteger processedCount;
+    private final List<ExecutorService> consumerPools;
+    private final AtomicLong processedCount;
 
-    public MessageHandler(Message message, List<ThreadPoolExecutor> consumerPools, AtomicInteger processedCount) {
+    public MessageHandler(Message message, List<ExecutorService> consumerPools, AtomicLong processedCount) {
         this.message = message;
         this.consumerPools = consumerPools;
         this.processedCount = processedCount;
-    }
-
-    public MessageHandler(Message message, List<ThreadPoolExecutor> consumerPools, Map<ThreadPoolExecutor, Long> consumerMinDelays, AtomicInteger processedCount) {
-        this(message, consumerPools, processedCount);
     }
 
     @Override
@@ -33,6 +28,7 @@ public class MessageHandler implements Runnable {
             logger.debug("strating message processing: " + message);
         }
 
+        // send this message to all consumers
         List<Future<Boolean>> consumerResults = new ArrayList<>();
         consumerPools.stream()
                 .forEach(consumerPool -> {
@@ -43,6 +39,7 @@ public class MessageHandler implements Runnable {
             logger.debug("message sent to consumers, waiting");
         }
 
+        // wait for consumer results
         try {
             for (Future<Boolean> consumerResult : consumerResults) {
                 consumerResult.get();
@@ -56,7 +53,9 @@ public class MessageHandler implements Runnable {
             return;
         }
 
-        logger.info(String.format("all consumers processed the message: %s", message));
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("all consumers processed the message: %s", message));
+        }
         processedCount.getAndIncrement();
     }
 }

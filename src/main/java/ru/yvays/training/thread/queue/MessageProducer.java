@@ -2,21 +2,19 @@ package ru.yvays.training.thread.queue;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class MessageProducer implements Runnable {
     private static final Logger logger = Logger.getLogger(MessageProducer.class);
 
     private final ExecutorService handlerPool;
-    private final List<ThreadPoolExecutor> consumerPools;
-    private final AtomicInteger processedCount;
-    private final AtomicInteger messageNumber;
+    private final List<ExecutorService> consumerPools;
+    private final AtomicLong processedCount;
+    private final AtomicLong messageNumber;
 
-    public MessageProducer(ExecutorService handlerPool, List<ThreadPoolExecutor> consumerPools, AtomicInteger processedCount, AtomicInteger messageNumber) {
+    public MessageProducer(ExecutorService handlerPool, List<ExecutorService> consumerPools, AtomicLong processedCount, AtomicLong messageNumber) {
         this.handlerPool = handlerPool;
         this.consumerPools = consumerPools;
         this.processedCount = processedCount;
@@ -27,13 +25,23 @@ public class MessageProducer implements Runnable {
     public void run() {
         logger.info("producer thread started");
         while (!Thread.currentThread().isInterrupted()) {
-            int number = messageNumber.get();
-            Message message = new Message("Message_" + number);
-            logger.info(String.format("sending message #%d to handlers", number));
+            long currentNumber = messageNumber.get();
+            Message message = new Message("Message_" + currentNumber);
+            if (logger.isDebugEnabled()) {
+                logger.debug(String.format("sending message #%d to handlers", currentNumber));
+            }
             MessageHandler messageHandler = new MessageHandler(message, consumerPools, processedCount);
             handlerPool.submit(messageHandler);
             messageNumber.getAndIncrement();
-            Thread.yield();
+            if (currentNumber % 100 == 0) {
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException e) {
+                    logger.info("producer thread sleep interrupted");
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
         }
         logger.info("producer thread stopped");
     }
