@@ -11,11 +11,11 @@ public class KpiInfo {
         consumedPrev = consumedCurr;
     }
 
-    public void setProducedCurr(long producedCurr) {
+    public void setProducedCurr( long producedCurr ) {
         this.producedCurr = producedCurr;
     }
 
-    public void setConsumedCurr(long consumedCurr) {
+    public void setConsumedCurr( long consumedCurr ) {
         this.consumedCurr = consumedCurr;
     }
 

@@ -3,7 +3,7 @@ package ru.yvays.training.thread.queue;
 public class Message {
     private final String messageBody;
 
-    public Message(String messageBody) {
+    public Message( String messageBody ) {
         this.messageBody = messageBody;
     }
 
