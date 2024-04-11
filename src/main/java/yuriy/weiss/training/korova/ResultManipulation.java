@@ -16,8 +16,8 @@ public class ResultManipulation {
 
     public static void copyAvailableIgnoringOne( int[] availableDigits, int[] nextAvailable, int nextDigit ) {
         int nextPos = 0;
-        for(int availableDigit : availableDigits) {
-            if (availableDigit != nextDigit) {
+        for ( int availableDigit : availableDigits ) {
+            if ( availableDigit != nextDigit ) {
                 nextAvailable[nextPos] = availableDigit;
                 nextPos++;
             }
@@ -78,10 +78,10 @@ public class ResultManipulation {
 
     public static ResultNumbers buildNumbersOptimized( int[] digitsCombination ) {
         return new ResultNumbers(
-                buildNumberOptimized( digitsCombination, new int[] {3, 1, 4, 1, 2, 0} ),
-                buildNumberOptimized( digitsCombination, new int[] {7, 4, 0, 2, 0} ),
-                buildNumberOptimized( digitsCombination, new int[] {8, 1, 5, 4, 3, 0} ),
-                buildNumberOptimized( digitsCombination, new int[] {9, 1, 6, 1, 3, 1} ) );
+                buildNumberOptimized( digitsCombination, new int[]{ 3, 1, 4, 1, 2, 0 } ),
+                buildNumberOptimized( digitsCombination, new int[]{ 7, 4, 0, 2, 0 } ),
+                buildNumberOptimized( digitsCombination, new int[]{ 8, 1, 5, 4, 3, 0 } ),
+                buildNumberOptimized( digitsCombination, new int[]{ 9, 1, 6, 1, 3, 1 } ) );
     }
 
     private static int buildNumberOptimized( int[] digitsCombination, int[] wordIndexes ) {
